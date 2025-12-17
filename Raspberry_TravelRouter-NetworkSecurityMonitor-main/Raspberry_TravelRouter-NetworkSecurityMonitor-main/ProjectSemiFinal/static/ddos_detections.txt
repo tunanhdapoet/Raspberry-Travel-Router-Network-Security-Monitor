@@ -1,0 +1,8 @@
+
+DOS ATTACK DETECTED!
+Source IP: 192.168.0.128
+Time: 2024-11-17 22:29:57.818128
+Indicators:
+- Packets/sec: 189.65
+- Unique connections: 697
+- Total bandwidth: 8796.40 KB

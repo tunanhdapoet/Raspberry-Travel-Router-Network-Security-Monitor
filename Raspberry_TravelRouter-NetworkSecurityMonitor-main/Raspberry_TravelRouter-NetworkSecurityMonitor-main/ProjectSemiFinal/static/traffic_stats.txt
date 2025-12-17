@@ -1,0 +1,19 @@
+Analysis Time: 2024-11-17 22:29:57
+Total Packets: 19348
+Unique Source IPs: 6
+Unique Destination IPs: 6
+Average Packet Size: 521.43 bytes
+Most Common Protocol: TCP
+
+Top 5 Source IPs:
+192.168.0.128    11379
+192.168.0.133     7408
+192.168.0.1        438
+192.168.0.232      101
+192.168.0.94        12
+
+Protocol Distribution:
+TCP      18565
+UDP        694
+Other       66
+OTHER       23

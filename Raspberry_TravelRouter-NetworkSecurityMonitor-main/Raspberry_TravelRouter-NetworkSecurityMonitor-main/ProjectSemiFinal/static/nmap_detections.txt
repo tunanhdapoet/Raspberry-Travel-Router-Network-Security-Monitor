@@ -1,0 +1,23 @@
+
+Potential scan detected from 192.168.0.128:
+- Unique ports scanned: 653
+- Packet rate: 3.56 packets/second
+- Small packet ratio: 34.17%
+
+
+Potential scan detected from 192.168.0.133:
+- Unique ports scanned: 3
+- Packet rate: 2.31 packets/second
+- Small packet ratio: 83.72%
+
+
+Potential scan detected from 192.168.0.94:
+- Unique ports scanned: 1
+- Packet rate: 0.02 packets/second
+- Small packet ratio: 83.33%
+
+
+Potential scan detected from 103.184.124.23:
+- Unique ports scanned: 5
+- Packet rate: 0.00 packets/second
+- Small packet ratio: 100.00%

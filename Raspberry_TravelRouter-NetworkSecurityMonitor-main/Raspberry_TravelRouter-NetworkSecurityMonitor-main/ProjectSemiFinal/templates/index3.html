@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Traffic Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #858796;
+            --success-color: #1cc88a;
+            --danger-color: #e74a3b;
+            --warning-color: #f6c23e;
+            --dark-color: #5a5c69;
+        }
+
+        body {
+            background-color: #f8f9fc;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), #224abe);
+            padding: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Card Styles */
+        .card {
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.15rem 1.75rem rgba(0, 0, 0, 0.15);
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background: white;
+            border-bottom: 1px solid #e3e6f0;
+            padding: 1rem 1.25rem;
+            border-top-left-radius: 0.75rem !important;
+            border-top-right-radius: 0.75rem !important;
+        }
+
+        .card-header h5 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-header h5 i {
+            margin-right: 0.5rem;
+        }
+
+        /* Table Styles */
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: #f8f9fc;
+            border-bottom: 2px solid #e3e6f0;
+            color: var(--dark-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fc;
+        }
+
+        /* Status Indicator */
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            position: relative;
+        }
+
+        .status-active {
+            background-color: var(--success-color);
+            box-shadow: 0 0 0 rgba(28, 200, 138, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(28, 200, 138, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(28, 200, 138, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(28, 200, 138, 0);
+            }
+        }
+
+        /* Alert Box Styles */
+        .alert-box {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border-left: 0.25rem solid var(--primary-color);
+        }
+
+        .detection-title {
+            color: var(--danger-color);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .detection-title i {
+            margin-right: 0.5rem;
+        }
+
+        /* IP Styles */
+        .local-ip {
+            color: var(--success-color) !important;
+            font-weight: 600;
+        }
+
+        .your-ip-label {
+            color: var(--success-color);
+            font-size: 0.8rem;
+            font-weight: 500;
+            background-color: rgba(28, 200, 138, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            margin-left: 0.5rem;
+        }
+
+        /* Pre/Code Block Styles */
+        pre {
+            background-color: #f8f9fc;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e3e6f0;
+            font-size: 0.875rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.15rem 1.75rem rgba(0, 0, 0, 0.15);
+        }
+
+        .chart-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Stats Counter */
+        .stats-counter {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .stats-counter h3 {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stats-counter p {
+            color: var(--secondary-color);
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+        /* Animation for updates */
+        @keyframes highlight {
+            0% { background-color: rgba(78, 115, 223, 0.1); }
+            100% { background-color: transparent; }
+        }
+
+        .highlight {
+            animation: highlight 1s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark">
+        <div class="container">
+            <span class="navbar-brand">
+                <i class="fas fa-network-wired me-2"></i>
+                Network Traffic Monitor
+                <span class="status-indicator status-active" id="statusIndicator"></span>
+                <small id="lastUpdate" class="ms-2 text-light opacity-75"></small>
+            </span>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Stats Row -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-counter">
+                    <i class="fas fa-exchange-alt mb-2 text-primary fa-2x"></i>
+                    <h3 id="totalPackets">0</h3>
+                    <p>Total Packets</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-counter">
+                    <i class="fas fa-server mb-2 text-success fa-2x"></i>
+                    <h3 id="uniqueIPs">0</h3>
+                    <p>Unique IPs</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-counter">
+                    <i class="fas fa-shield-alt mb-2 text-warning fa-2x"></i>
+                    <h3 id="securityAlerts">0</h3>
+                    <p>Security Alerts</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-counter">
+                    <i class="fas fa-tachometer-alt mb-2 text-info fa-2x"></i>
+                    <h3 id="avgPacketSize">0</h3>
+                    <p>Avg Packet Size (bytes)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Traffic Table -->
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-stream"></i> Live Network Traffic</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="trafficTable">
+                                <thead>
+                                    <tr>
+                                        <th><i class="far fa-clock me-1"></i>Timestamp</th>
+                                        <th><i class="fas fa-upload me-1"></i>Source IP</th>
+                                        <th><i class="fas fa-download me-1"></i>Destination IP</th>
+                                        <th><i class="fas fa-code-branch me-1"></i>Protocol</th>
+                                        <th><i class="fas fa-weight me-1"></i>Length</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Traffic Statistics -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-line"></i> Traffic Statistics</h5>
+                    </div>
+                    <div class="card-body">
+                        <pre>{{ traffic_stats }}</pre>
+                        <div class="chart-container">
+                            <img src="{{ url_for('static', filename='traffic_analysis.png') }}" 
+                                 alt="Traffic Analysis" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Alerts -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-shield-alt"></i> Security Alerts</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Port Scanning Detection -->
+                        <div class="alert-box">
+                            <div class="detection-title">
+                                <i class="fas fa-search"></i>
+                                Port Scanning Detection
+                            </div>
+                            <pre>{{ nmap_detections }}</pre>
+                        </div>
+
+                        <!-- DDoS Detection -->
+                        <div class="alert-box">
+                            <div class="detection-title">
+                                <i class="fas fa-radiation-alt"></i>
+                                DDoS Attack Detection
+                            </div>
+                            <pre>{{ ddos_detections }}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lấy địa chỉ IP local
+        async function getLocalIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                console.error('Error getting local IP:', error);
+                return '127.0.0.1';
+            }
+        }
+
+        let localIP = '127.0.0.1';
+        let lastPacketCount = 0;
+        
+        getLocalIP().then(ip => {
+            localIP = ip;
+        });
+
+        // Cập nhật bảng traffic
+        function updateTrafficTable() {
+            fetch('/api/traffic/latest')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('#trafficTable tbody');
+                    tbody.innerHTML = '';
+                    
+                    // Cập nhật số liệu thống kê
+                    updateStats(data);
+                    
+                    data.forEach(row => {
+                        const tr = document.createElement('tr');
+                        
+                        const isLocalSrc = row.src_ip === localIP || row.src_ip === '127.0.0.1';
+                        const isLocalDst = row.dst_ip === localIP || row.dst_ip === '127.0.0.1';
+                        
+                        tr.innerHTML = `
+                            <td>${new Date(row.timestamp).toLocaleString()}</td>
+                            <td class="${isLocalSrc ? 'local-ip' : ''}">
+                                ${row.src_ip}
+                                ${isLocalSrc ? '<span class="your-ip-label">Your IP</span>' : ''}
+                            </td>
+                            <td class="${isLocalDst ? 'local-ip' : ''}">
+                                ${row.dst_ip}
+                                ${isLocalDst ? '<span class="your-ip-label">Your IP</span>' : ''}
+                            </td>
+                            <td><span class="badge bg-primary">${row.protocol}</span></td>
+                            <td>${row.length.toLocaleString()} bytes</td>
+                        `;
+                        
+                        if (data.indexOf(row) === 0) {
+                            tr.classList.add('highlight');
+                        }
+                        
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Cập nhật số liệu thống kê
+        function updateStats(data) {
+            const totalPackets = data.length;
+            const uniqueIPs = new Set([...data.map(row => row.src_ip), ...data.map(row => row.dst_ip)]).size;
+            const avgPacketSize = Math.round(data.reduce((acc, row) => acc +
